@@ -9,13 +9,40 @@ const SENT = 'Sent.';
 
 const API_ENDPOINT = 'http://www.xn--p18h.tk:8080/api/newMessage';
 
+const ADJECTIVES = ['fun', 'sad', 'happy']
+const NOUNS = ['horse', 'cat', 'dog', 'giraffe']
+
+function getRequest(handlerInput) {
+    return handlerInput.requestEnvelope.request;
+}
+
+function randFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+function generateName() {
+    return `${randFrom(ADJECTIVES)}-${randFrom(ADJECTIVES)}-${randFrom(NOUNS)}`;
+}
+
+function getName(handlerInput) {
+    attr = handlerInput.attributesManager.getSessionAttributes();
+    if (attr['username']) {
+        return attr['username'];
+    }
+    else {
+        attr['username'] = generateName();
+        handlerInput.attributesManager.setSessionAttributes(attr);
+        return attr['username'];
+    }
+}
+
 function isIntentRequest(handlerInput, name) {
-    const request = handlerInput.requestEnvelope.request;
+    const request = getRequest(handlerInput);
     return request.type == 'IntentRequest' && request.intent.name == name;
 }
 
 function isLaunchRequest(handlerInput) {
-    const request = handlerInput.requestEnvelope.request;
+    const request = getRequest(handlerInput);
     return request.type == 'LaunchRequest';
 }
 
@@ -37,11 +64,12 @@ const SendMessageIntentHandler = {
         return isIntentRequest(handlerInput, 'SendMessageIntent');
     },
     handle(handlerInput) {
+        const request = getRequest(handlerInput);
         Request.post({
             uri: API_ENDPOINT,
             json: {
-                username: 'SexySexy',
-                body: 'Jumbo Jimbo is mine.'
+                username: getName(handlerInput),
+                body: request.intent.slots.message.value
             }
         });
         return handlerInput.responseBuilder
