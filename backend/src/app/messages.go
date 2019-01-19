@@ -25,9 +25,3 @@ type PushMessage struct {
 	Message Message
 	To []PushRegistration
 }
-
-type IncomingMessage struct {
-	Sender uint64 `json:"sender"`
-	SenderName string `json:"username"`
-	Body string `json:"body"`
-}
