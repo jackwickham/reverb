@@ -21,6 +21,11 @@ type IncomingMessage struct {
 	Body string `json:"body"`
 }
 
+type SMSMessage struct {
+	SenderName string `json:"from"`
+	Body string `json:"body"`
+}
+
 var upgrader = websocket.Upgrader{}
 var lastId uint64 = 0
 var sockets = make(map[uint64]*websocket.Conn)
@@ -28,7 +33,8 @@ var receiveBuffer = make(chan Message, 200)
 
 func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegistration, getMessagesChannel chan MessageLoadRequest) {
 	app := &App{newMsgChannel, pushRegistrationChannel, getMessagesChannel}
-
+	
+	http.HandleFunc("/api/sms", app.handleSMS)
 	http.HandleFunc("/api/newMessage", app.handleNewMessageHttp)
 	http.HandleFunc("/websocket", app.handleWebsocketConnect)
 	fs := http.FileServer(http.Dir("../front"))
@@ -37,6 +43,27 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 	go app.handleMessage()
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func (a *App) handleSMS(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var msg SMSMessage
+	err := decoder.Decode(&msg)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid request body", 400)
+		return
+	}
+
+	messageId := atomic.AddUint64(&lastId, 1)
+	message := Message{
+		0,
+		messageId,
+		msg.SenderName,
+		msg.Body,
+	}
+
+	receiveBuffer <- message 
 }
 
 func (a *App) handleNewMessageHttp(w http.ResponseWriter, r *http.Request) {
