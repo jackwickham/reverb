@@ -37,24 +37,16 @@ const SendMessageIntentHandler = {
         return isIntentRequest(handlerInput, 'SendMessageIntent');
     },
     handle(handlerInput) {
-        try {
-            Request
-                .post(API_ENDPOINT)
-                .form({
-                    username: 'SexySexy',
-                    body: 'Jumbo Jimbo is mine.'
-                });
-            return handlerInput.responseBuilder
-                .speak(SENT)
-                .withShouldEndSession(false)
-                .getResponse();
-        }
-        catch {
-            return handlerInput.responseBuilder
-                .speak('Could not send.')
-                .withShouldEndSession(false)
-                .getResponse();
-        }
+        Request
+            .post(API_ENDPOINT)
+            .form({
+                username: 'SexySexy',
+                body: 'Jumbo Jimbo is mine.'
+            });
+        return handlerInput.responseBuilder
+            .speak(SENT)
+            .withShouldEndSession(false)
+            .getResponse();
     }
 };
 
