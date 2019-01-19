@@ -98,6 +98,20 @@ const SendMessageIntentHandler = {
     }
 };
 
+const SetUsernameIntentHandler = {
+    canHandle(handlerInput) {
+        return isIntentRequest(handlerInput, 'SetUsernameIntent');
+    },
+    handle(handlerInput) {
+        const request = getRequest(handlerInput);
+        setName(request.intent.slots.username.value);
+        return handlerInput.responseBuilder
+            .speak(USERNAME_SET)
+            .withShouldEndSession(false)
+            .getResponse();
+    }
+};
+
 const StopIntentHandler = {
     canHandle(handlerInput) {
         return isIntentRequest(handlerInput, 'StopIntent')
@@ -148,6 +162,7 @@ exports.handler =
             LaunchIntentHandler,
             SendMessageIntentHandler,
             StopIntentHandler,
+            SetUsernameIntentHandler,
             FallbackIntentHandler
         )
         .addErrorHandlers(
