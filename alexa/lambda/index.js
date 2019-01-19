@@ -79,9 +79,10 @@ const SendMessageIntentHandler = {
     }
 };
 
-const ExitIntentHandler = {
+const StopIntentHandler = {
     canHandle(handlerInput) {
-        return isIntentRequest(handlerInput, 'ExitIntent')
+        return isIntentRequest(handlerInput, 'StopIntent')
+            || isIntentRequest(handlerInput, 'NavigateHomeIntent')
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
@@ -126,7 +127,7 @@ exports.handler =
         .addRequestHandlers(
             LaunchIntentHandler,
             SendMessageIntentHandler,
-            ExitIntentHandler,
+            StopIntentHandler,
             FallbackIntentHandler
         )
         .addErrorHandlers(
