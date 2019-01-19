@@ -4,6 +4,7 @@ const Alexa = require('ask-sdk-core');
 
 FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.'
 FALLBACK_REPROMPT = 'How can I help?'
+GOODBYE = 'Goodbye.'
 
 function isIntentRequest(handlerInput, name) {
     const request = handlerInput.requestEnvelope.request;
@@ -27,20 +28,14 @@ const SendMessageIntentHandler = {
     }
 };
 
-const ConfirmIntentHandler = {
-    canHandle(handlerInput) {
-        return isIntentRequest(handlerInput, 'Confirm.Intent.603332935488');
-    },
-    handle(handlerInput) {
-        return handlerInput.responseBuilder
-            .speak('Broadcasting your message')
-            .getResponse();
-    }
-}
-
 const ExitIntentHandler = {
     canHandle(handlerInput) {
         return isIntentRequest(handlerInput, 'ExitIntent')
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak(GOODBYE)
+            .getResponse();
     }
 }
 
@@ -79,7 +74,7 @@ exports.handler =
     Alexa.SkillBuilders.custom()
         .addRequestHandlers(
             SendMessageIntentHandler,
-            ConfirmIntentHandler,
+            ExitIntentHandler,
             FallbackIntentHandler
         )
         .addErrorHandlers(
