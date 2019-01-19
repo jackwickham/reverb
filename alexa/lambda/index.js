@@ -108,12 +108,11 @@ const ErrorHandler = {
         return true;
     },
     handle(handlerInput, error) {
-        console.log(`Error handled: ${error.message}`);
+        console.log(`Error handled: ${error.message} ${request}`);
         var message = 'Sorry, an error has occurred.';
         if (process.env.DEBUG) {
             const request = handlerInput.requestEnvelope.request;
-            message = `Error for type=${request.type}`
-                + ` intent=${request.intent.name}: ${error.message}`;
+            message = `Error for request=${request}: ${error.message||''}`;
         }
         return handlerInput.responseBuilder
             .speak(message)
