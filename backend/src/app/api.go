@@ -1,6 +1,7 @@
 package app
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
 	"log"
@@ -37,12 +38,30 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 }
 
 func (a *App) handleNewMessageHttp(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello %s", r.URL.Path[1:])
+	decoder := json.NewDecoder(r.Body)
+	var msg IncomingMessage
+	err := decoder.Decode(&msg)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid request body", 400)
+		return
+	}
+
+	messageId := atomic.AddUint64(&lastId, 1)
+
+	message := Message{
+		0,
+		messageId,
+		msg.SenderName,
+		msg.Body,
+	}
+
+	receiveBuffer <- message
 }
 
 func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 	userId, err := strconv.ParseUint(r.URL.Query().Get("userId"), 10, 64)
-	if (err != nil) {
+	if err != nil {
 		log.Println(err)
 		http.Error(w, "missing user ID", 400)
 		return
