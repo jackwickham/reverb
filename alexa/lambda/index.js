@@ -22,7 +22,10 @@ const NOUNS = [
 ];
 
 function makeSafeName(name) {
-    return name.replace(/\s/, '-').replace(/[^a-z\s]/, '');
+    return name
+        .toLowerCase()
+        .replace(/\s/, '-')
+        .replace(/[^a-z\s-]/, '');
 }
 
 function randFrom(arr) {
