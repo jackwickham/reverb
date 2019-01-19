@@ -1,4 +1,4 @@
-const Alexa = require('ask-sdk');
+const Alexa = require('ask-sdk-core');
 const Handler = require('./handler');
 const Error = require('./error');
 
