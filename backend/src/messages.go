@@ -1,4 +1,4 @@
-package messages
+package src
 
 type UnsentMessage struct {
 	message Message
