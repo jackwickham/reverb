@@ -1,12 +1,13 @@
 const Alexa = require('ask-sdk-core');
-const Http = require('http');
+const Request = require('request');
 
-// POST /api/newMessage { username: "Jamie", body: "Hello there" }
+const FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.';
+const REPROMPT = 'How can I help?';
+const WELCOME = 'Hello, welcome to Reverb. How can I help?';
+const GOODBYE = 'Goodbye.';
+const SENT = 'Sent.';
 
-FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.'
-REPROMPT = 'How can I help?'
-WELCOME = 'Hello, welcome to Reverb. How can I help?'
-GOODBYE = 'Goodbye.'
+const API_ENDPOINT = 'localhost:8080/api/newMessage';
 
 function isIntentRequest(handlerInput, name) {
     const request = handlerInput.requestEnvelope.request;
@@ -36,8 +37,14 @@ const SendMessageIntentHandler = {
         return isIntentRequest(handlerInput, 'SendMessageIntent');
     },
     handle(handlerInput) {
+        request
+            .post(API_ENDPOINT)
+            .form({
+                username: 'SexySexy',
+                body: 'Jumbo Jimbo is mine.'
+            });
         return handlerInput.responseBuilder
-            .speak('43')
+            .speak(SENT)
             .withShouldEndSession(false)
             .getResponse();
     }
