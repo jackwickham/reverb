@@ -6,6 +6,7 @@ const REPROMPT = 'How can I help?';
 const WELCOME = 'Hello, welcome to Reverb. How can I help?';
 const GOODBYE = 'Goodbye.';
 const SENT = 'Sent.';
+const USERNAME_SET = 'Your username has been changed.'
 
 const API_ENDPOINT = 'http://www.xn--p18h.tk:8080/api/newMessage';
 
@@ -32,10 +33,9 @@ function getRequest(handlerInput) {
     return handlerInput.requestEnvelope.request;
 }
 
-
 function setName(handlerInput, name) {
     attr = handlerInput.attributesManager.getSessionAttributes();
-    attr['username'] = generateName();
+    attr['username'] = name;
     handlerInput.attributesManager.setSessionAttributes(attr);
     return attr['username'];
 }
@@ -104,7 +104,7 @@ const SetUsernameIntentHandler = {
     },
     handle(handlerInput) {
         const request = getRequest(handlerInput);
-        setName(request.intent.slots.username.value);
+        setName(handlerInput, request.intent.slots.username.value);
         return handlerInput.responseBuilder
             .speak(USERNAME_SET)
             .withShouldEndSession(false)
