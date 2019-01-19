@@ -9,12 +9,16 @@ const SENT = 'Sent.';
 
 const API_ENDPOINT = 'http://www.xn--p18h.tk:8080/api/newMessage';
 
-const ADJECTIVES = ['fun', 'sad', 'happy']
-const NOUNS = ['horse', 'cat', 'dog', 'giraffe']
-
-function getRequest(handlerInput) {
-    return handlerInput.requestEnvelope.request;
-}
+const ADJECTIVES = [
+    'fun', 'sad', 'happy', 'basic', 'large', 'important', 'different',
+    'available', 'popular', 'able', 'hot', 'scared', 'old', 'healthy',
+    'traditional', 'strong', 'successful', 'nyan'
+];
+const NOUNS = [
+    'horse', 'cat', 'dog', 'giraffe', 'book', 'business', 'child', 'country',
+    'eyeball', 'fact', 'hand', 'seaman', 'student', 'person', 'thing', 'family',
+    'group', 'prime-minster', 'pig',
+];
 
 function randFrom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
@@ -24,15 +28,25 @@ function generateName() {
     return `${randFrom(ADJECTIVES)}-${randFrom(ADJECTIVES)}-${randFrom(NOUNS)}`;
 }
 
+function getRequest(handlerInput) {
+    return handlerInput.requestEnvelope.request;
+}
+
+
+function setName(handlerInput, name) {
+    attr = handlerInput.attributesManager.getSessionAttributes();
+    attr['username'] = generateName();
+    handlerInput.attributesManager.setSessionAttributes(attr);
+    return attr['username'];
+}
+
 function getName(handlerInput) {
     attr = handlerInput.attributesManager.getSessionAttributes();
     if (attr['username']) {
         return attr['username'];
     }
     else {
-        attr['username'] = generateName();
-        handlerInput.attributesManager.setSessionAttributes(attr);
-        return attr['username'];
+        return setName(generateName());
     }
 }
 
