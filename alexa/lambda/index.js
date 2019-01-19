@@ -1,9 +1,11 @@
 const Alexa = require('ask-sdk-core');
+const Http = require('http');
 
-// POST /api/newMessage { senderName: "Jamie", senderIdentifier: uint64"xy27", message: "Hello there" }
+// POST /api/newMessage { username: "Jamie", body: "Hello there" }
 
 FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.'
-FALLBACK_REPROMPT = 'How can I help?'
+REPROMPT = 'How can I help?'
+WELCOME = 'Hello, welcome to Reverb. How can I help?'
 GOODBYE = 'Goodbye.'
 
 function isIntentRequest(handlerInput, name) {
@@ -16,14 +18,27 @@ function isLaunchRequest(handlerInput) {
     return request.type == 'LaunchRequest';
 }
 
-const SendMessageIntentHandler = {
+const LaunchIntentHandler = {
     canHandle(handlerInput) {
-        return isLaunchRequest(handlerInput)
-            || isIntentRequest(handlerInput, 'SendMessageIntent');
+        return isLaunchRequest(handlerInput);
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
-            .speak('To infinity and beyond')
+            .speak(WELCOME)
+            .reprompt(REPROMPT)
+            .withShouldEndSession(false)
+            .getResponse();
+    }
+}
+
+const SendMessageIntentHandler = {
+    canHandle(handlerInput) {
+        return isIntentRequest(handlerInput, 'SendMessageIntent');
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak('43')
+            .withShouldEndSession(false)
             .getResponse();
     }
 };
@@ -35,6 +50,7 @@ const ExitIntentHandler = {
     handle(handlerInput) {
         return handlerInput.responseBuilder
             .speak(GOODBYE)
+            .withShouldEndSession(true)
             .getResponse();
     }
 }
@@ -46,7 +62,7 @@ const FallbackIntentHandler = {
     handle(handlerInput) {
         return handlerInput.responseBuilder
             .speak(FALLBACK_MESSAGE)
-            .reprompt(FALLBACK_REPROMPT)
+            .reprompt(REPROMPT)
             .getResponse();
     },
 };
@@ -73,6 +89,7 @@ const ErrorHandler = {
 exports.handler =
     Alexa.SkillBuilders.custom()
         .addRequestHandlers(
+            LaunchIntentHandler,
             SendMessageIntentHandler,
             ExitIntentHandler,
             FallbackIntentHandler
