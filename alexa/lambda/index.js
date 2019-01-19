@@ -1,11 +1,13 @@
 const Alexa = require('ask-sdk');
+const Handler = require('./handler');
+const Error = require('./error');
 
 exports.handler =
     Alexa.SkillBuilders.standard()
         .addRequestHandlers(
-            ReverbHandler
+            Handler.ReverbHandler
         )
         .addErrorHandlers(
-            ErrorHandler
+            Error.ErrorHandler
         )
         .lambda();
