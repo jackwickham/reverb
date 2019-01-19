@@ -84,7 +84,7 @@ const ErrorHandler = {
         if (process.env.DEBUG) {
             const request = handlerInput.requestEnvelope.request;
             message = `Error for type=${request.type}`
-                + `intent=${request.intent.name}: ${error.message}`;
+                + ` intent=${request.intent.name}: ${error.message}`;
         }
         return handlerInput.responseBuilder
             .speak(message)
