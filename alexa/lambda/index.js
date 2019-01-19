@@ -5,12 +5,20 @@ const Alexa = require('ask-sdk-core');
 FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.'
 FALLBACK_REPROMPT = 'How can I help?'
 
+function isIntentRequest(handlerInput, name) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type == 'IntentRequest' && request.intent.name == name;
+}
+
+function isLaunchRequest(handlerInput) {
+    const request = handlerInput.requestEnvelope.request;
+    return request.type == 'LaunchRequest';
+}
+
 const SendMessageIntentHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        return request.type == 'LaunchRequest'
-            || (request.type == 'IntentRequest'
-                && request.intent.name == 'SendMessageIntent');
+        return isLaunchRequest(handlerInput)
+            || isIntentRequest(handlerInput, 'SendMessageIntent');
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
@@ -21,10 +29,7 @@ const SendMessageIntentHandler = {
 
 const ConfirmIntentHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        return request.type == 'LaunchRequest'
-            || (request.type == 'IntentRequest'
-                && request.intent.name == 'Confirm.Intent.603332935488');
+        return isIntentRequest(handlerInput, 'Confirm.Intent.603332935488');
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
@@ -33,11 +38,15 @@ const ConfirmIntentHandler = {
     }
 }
 
+const ExitIntentHandler = {
+    canHandle(handlerInput) {
+        return isIntentRequest(handlerInput, 'ExitIntent')
+    }
+}
+
 const FallbackIntentHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request;
-        return request.type == 'IntentRequest'
-            && request.intent.name == 'AMAZON.FallbackIntent';
+        return isIntentRequest(handlerInput, 'AMAZON.FallbackIntent');
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
