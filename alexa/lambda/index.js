@@ -1,11 +1,16 @@
 const Alexa = require('ask-sdk-core');
 
-const ReverbHandler = {
-    canHandle() {
-        return true;
+// POST /api/newMessage { senderName: "Jamie", senderIdentifier: uint64"xy27", message: "Hello there" }
+
+const SendMessageIntentHandler = {
+    canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request;
+        return request.type == 'LaunchRequest'
+            || (request.type == 'IntentRequest'
+                && request.intent.name == 'SendMessageIntent');
     },
-    handle(input) {
-        return input.responseBuilder
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
             .speak('To infinity and beyond')
             .getResponse();
     }
@@ -27,7 +32,7 @@ const ErrorHandler = {
 exports.handler =
     Alexa.SkillBuilders.custom()
         .addRequestHandlers(
-            ReverbHandler
+            SendMessageIntentHandler
         )
         .addErrorHandlers(
             ErrorHandler
