@@ -31,6 +31,8 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 
 	http.HandleFunc("/api/newMessage", app.handleNewMessageHttp)
 	http.HandleFunc("/websocket", app.handleWebsocketConnect)
+	fs := http.FileServer(http.Dir("../front"))
+	http.Handle("/", fs)
 
 	go app.handleMessage()
 
