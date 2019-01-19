@@ -2,6 +2,7 @@ package main
 
 import (
 	"app"
+	"fmt"
 )
 
 func main() {
@@ -12,5 +13,10 @@ func main() {
 	go app.Api(newMessageChannel, pushRegistrationChannel, getMessagesChannel)
 
 	// Wait forever
-	select { }
+	for {
+		select {
+			case m := <- newMessageChannel:
+				fmt.Printf("Processed %s", m)
+		}
+	}
 }

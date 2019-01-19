@@ -1,27 +1,33 @@
 package app
 
 type UnsentMessage struct {
-	message Message
-	sentTo []uint64
+	Message Message
+	SentTo []uint64
 }
 
 type PushRegistration struct {
-	user uint64
+	User uint64
 
 }
 
 type MessageLoadRequest struct {
-	lastSeenId uint64
+	LastSeenId uint64
 }
 
 type Message struct {
-	sender uint64
-	id uint64
-	senderName string
-	body string
+	Sender uint64
+	Id uint64
+	SenderName string
+	Body string
 }
 
 type PushMessage struct {
-	message Message
-	to []PushRegistration
+	Message Message
+	To []PushRegistration
+}
+
+type IncomingMessage struct {
+	Sender uint64 `json:"sender"`
+	SenderName string `json:"username"`
+	Body string `json:"body"`
 }
