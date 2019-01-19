@@ -37,7 +37,7 @@ const SendMessageIntentHandler = {
         return isIntentRequest(handlerInput, 'SendMessageIntent');
     },
     handle(handlerInput) {
-        request
+        Request
             .post(API_ENDPOINT)
             .form({
                 username: 'SexySexy',

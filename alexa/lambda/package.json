@@ -12,6 +12,7 @@
   "repository": "github:jackwickham/reverb",
   "dependencies": {
     "ask-sdk-core": "^2.0.0",
-    "ask-sdk-model": "^1.0.0"
+    "ask-sdk-model": "^1.0.0",
+    "request": "^2.88.0"
   }
 }
