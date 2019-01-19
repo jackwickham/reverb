@@ -21,6 +21,10 @@ const NOUNS = [
     'group', 'prime-minster', 'pig',
 ];
 
+function makeSafeName(name) {
+    return name.replace(/\s/, '-').replace(/[^a-z\s]/, '');
+}
+
 function randFrom(arr) {
     return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -35,7 +39,7 @@ function getRequest(handlerInput) {
 
 function setName(handlerInput, name) {
     attr = handlerInput.attributesManager.getSessionAttributes();
-    attr['username'] = name;
+    attr['username'] = makeSafeName(name);
     handlerInput.attributesManager.setSessionAttributes(attr);
     return attr['username'];
 }
