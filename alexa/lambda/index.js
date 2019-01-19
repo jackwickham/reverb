@@ -46,6 +46,11 @@ function isLaunchRequest(handlerInput) {
     return request.type == 'LaunchRequest';
 }
 
+function isEndRequest(handlerInput) {
+    const request = getRequest(handlerInput);
+    return request.type == 'SessionEndedRequest';
+}
+
 const LaunchIntentHandler = {
     canHandle(handlerInput) {
         return isLaunchRequest(handlerInput);
@@ -83,6 +88,7 @@ const StopIntentHandler = {
     canHandle(handlerInput) {
         return isIntentRequest(handlerInput, 'StopIntent')
             || isIntentRequest(handlerInput, 'NavigateHomeIntent')
+            || isEndRequest(handlerInput);
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
@@ -109,11 +115,11 @@ const ErrorHandler = {
         return true;
     },
     handle(handlerInput, error) {
-        console.log(`Error handled: ${error.message} ${request}`);
+        const request = handlerInput.requestEnvelope.request;
+        console.log(`Error handled: ${error.message} ${JSON.stringify(request)}`);
         var message = 'Sorry, an error has occurred.';
         if (process.env.DEBUG) {
-            const request = handlerInput.requestEnvelope.request;
-            message = `Error for request=${request}: ${error.message||''}`;
+            message = `Error for request=${JSON.stringify(request)}: ${error.message}`;
         }
         return handlerInput.responseBuilder
             .speak(message)
