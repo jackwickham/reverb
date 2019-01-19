@@ -7,7 +7,7 @@ const WELCOME = 'Hello, welcome to Reverb. How can I help?';
 const GOODBYE = 'Goodbye.';
 const SENT = 'Sent.';
 
-const API_ENDPOINT = 'http://xn--p18h.tk:8080/api/newMessage';
+const API_ENDPOINT = 'http://www.xn--p18h.tk:8080/api/newMessage';
 
 function isIntentRequest(handlerInput, name) {
     const request = handlerInput.requestEnvelope.request;
@@ -37,12 +37,13 @@ const SendMessageIntentHandler = {
         return isIntentRequest(handlerInput, 'SendMessageIntent');
     },
     handle(handlerInput) {
-        Request
-            .post(API_ENDPOINT)
-            .form({
+        Request.post({
+            uri: API_ENDPOINT,
+            json: {
                 username: 'SexySexy',
                 body: 'Jumbo Jimbo is mine.'
-            });
+            }
+        });
         return handlerInput.responseBuilder
             .speak(SENT)
             .withShouldEndSession(false)
