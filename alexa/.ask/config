@@ -1,0 +1,33 @@
+{
+  "deploy_settings": {
+    "default": {
+      "skill_id": "amzn1.ask.skill.e36913c3-f3fd-4010-b621-a4c154e1e750",
+      "was_cloned": false,
+      "merge": {},
+      "resources": {
+        "manifest": {
+          "eTag": "2466838ab6b0fe23cb86491194f7e62e"
+        },
+        "interactionModel": {
+          "en-GB": {
+            "eTag": "58f535576e1531e4b50eaf76f84580a8"
+          }
+        },
+        "lambda": [
+          {
+            "alexaUsage": [
+              "custom/default"
+            ],
+            "arn": "arn:aws:lambda:eu-west-1:724055753616:function:reverb-skill",
+            "awsRegion": "eu-west-1",
+            "codeUri": "lambda",
+            "functionName": "reverb-skill",
+            "handler": "index.handler",
+            "revisionId": "70d816ad-f4af-432d-a79e-931459e698d3",
+            "runtime": "nodejs8.10"
+          }
+        ]
+      }
+    }
+  }
+}
