@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,11 +18,6 @@ type App struct {
 
 type IncomingMessage struct {
 	SenderName string `json:"username"`
-	Body string `json:"body"`
-}
-
-type SMSMessage struct {
-	SenderName string `json:"from"`
 	Body string `json:"body"`
 }
 
@@ -47,29 +41,24 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 }
 
 func (a *App) handleSMS(w http.ResponseWriter, r *http.Request) {
-	buf, bodyErr := ioutil.ReadAll(r.Body)
-	if bodyErr != nil {
-		log.Println("bodyErr ", bodyErr.Error())
-		http.Error(w, bodyErr.Error(), 500)
-	} else {
-		log.Println("body content ", buf)
-	}
-	return
-	decoder := json.NewDecoder(r.Body)
-	var msg SMSMessage
-	err := decoder.Decode(&msg)
+	log.Println("Received SMS webhook")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	err := r.ParseForm()
 	if err != nil {
-		log.Println(err)
-		http.Error(w, "Invalid request body", 400)
+		log.Println("SMS webhook ", err)
+		http.Error(w, "failed", 500)
 		return
 	}
+
+	form := r.PostForm
 
 	messageId := atomic.AddUint64(&lastId, 1)
 	message := Message{
 		0,
 		messageId,
-		msg.SenderName,
-		msg.Body,
+		form.Get("From"),
+		form.Get("Body"),
 	}
 
 	receiveBuffer <- message 
@@ -107,7 +96,6 @@ func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Not a websocket request", 400)
 		return
 	}
 	// Make sure we close the connection when the function returns
@@ -142,6 +130,7 @@ func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 func (a *App) handleMessage() {
 	for {
 		msg := <- receiveBuffer
+		log.Println(msg)
 		sentTo := make([]uint64, len(sockets))
 		for k, v := range sockets {
 			err := v.WriteJSON(msg)
