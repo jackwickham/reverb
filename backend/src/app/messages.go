@@ -6,8 +6,12 @@ type UnsentMessage struct {
 }
 
 type PushRegistration struct {
-	User uint64
-
+	User uint64 `json:"userId"`
+	Endpoint string `json:"endpoint"`
+	Keys struct{
+		Auth string `json:"auth"`
+		P256dh string `json:"p256dh"`
+	} `json:"keys"`
 }
 
 type MessageLoadRequest struct {

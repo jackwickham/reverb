@@ -15,6 +15,8 @@ func main() {
 
 	go app.Controller(newMessageChannel, pushRegistrationChannel, getMessagesChannel, sendMessagesChannel, pushMessagesChannel)
 
+	go app.Webpush(pushMessagesChannel)
+
 	// Wait forever
 	for {
 		select { }
