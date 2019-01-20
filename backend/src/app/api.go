@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -126,17 +127,13 @@ func (a *App) handleMessage() {
 		msg := <- receiveBuffer
 		sentTo := make([]uint64, len(sockets))
 		for k, v := range sockets {
-			if k == msg.Sender {
-				sentTo = append(sentTo, k)
+			err := v.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error %v\n", err)
+				v.Close()
+				delete(sockets, k)
 			} else {
-				err := v.WriteJSON(msg)
-				if err != nil {
-					log.Printf("error %v", err)
-					v.Close()
-					delete(sockets, k)
-				} else {
-					sentTo = append(sentTo, k)
-				}
+				sentTo = append(sentTo, k)
 			}
 		}
 		a.newMsgChannel <- UnsentMessage{msg, sentTo}

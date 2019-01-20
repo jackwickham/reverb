@@ -15,10 +15,10 @@ type MessageLoadRequest struct {
 }
 
 type Message struct {
-	Sender uint64
-	Id uint64
-	SenderName string
-	Body string
+	Sender uint64 `json:"sender"`
+	Id uint64 `json:"id"`
+	SenderName string `json:"senderName"`
+	Body string `json:"body"`
 }
 
 type PushMessage struct {
