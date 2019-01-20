@@ -1,5 +1,6 @@
 package app
 
+import "log"
 
 func Controller(wsUnsent      chan UnsentMessage,
 		wsPR          chan PushRegistration,
@@ -14,8 +15,8 @@ func Controller(wsUnsent      chan UnsentMessage,
 	pushDbStore := make(chan PushRegistration, 200)
 
 	// Set up the databases
-	go mDB(wsSend, msgDbQuery, msgDbStore)
-	go pDB(pnPush, msgDbStore, pushDbStore)
+	go messageDb(wsSend, msgDbQuery, msgDbStore)
+	go pushDb(pnPush, pushDbQuery, pushDbStore)
 
 	// Deal with all the data
 	for{
@@ -31,7 +32,7 @@ func Controller(wsUnsent      chan UnsentMessage,
 	}
 }
 
-func mDB(out   chan Message,
+func messageDb(savedMessages chan Message,
 	 query chan MessageLoadRequest,
 	 in    chan UnsentMessage){
 
@@ -44,7 +45,7 @@ func mDB(out   chan Message,
 			case req := <-query:
 				// Move into goroutine
 				x := req.LastSeenId + 1
-				go getMessages(messages[x:], out)
+				go getMessages(messages[x:], savedMessages)
 		}
 	}
 }
@@ -56,43 +57,46 @@ func getMessages(messages []Message, out chan Message){
 }
 
 
-func pDB(out   chan PushMessage,
-	 query chan UnsentMessage,
-	 in    chan PushRegistration){
+func pushDb(pusher chan PushMessage,
+	 messagesToPush chan UnsentMessage,
+	 newRegistrations chan PushRegistration){
 
 	pushRegs := make(map[uint64]PushRegistration)
 
 	for {
 		select {
-			case pushReg := <-in:
+			case pushReg := <-newRegistrations:
 				pushRegs[pushReg.User] = pushReg
-			case pushQuery := <-query:
+			case pushQuery := <-messagesToPush:
 				users := pushQuery.SentTo
 				m := pushQuery.Message
-				go pushMessages(users, pushRegs, m, out)
+				pushMessages(users, pushRegs, m, pusher)
 		}
 	}
 }
 
-func pushMessages(users []uint64,
+func pushMessages(pushTo []uint64,
 		  db map[uint64]PushRegistration,
 		  message Message,
-		  out chan PushMessage){
+		  pusher chan PushMessage){
+		  	log.Println("searching for users to push to")
 
 	pushUsers := make([]PushRegistration, 0)
 
 	for userKey := range db {
 		sendUser := true
-		for _, user := range users{
+		for _, user := range pushTo {
 			if user == userKey {
 				sendUser = false
+				break
 			}
 		}
-		if sendUser {
+		if sendUser || true {
 			pushUsers = append(pushUsers, db[userKey])
 		}
 	}
 
 	pushMessage := PushMessage{message, pushUsers}
-	out <-pushMessage
+	log.Println(pushMessage)
+	pusher <-pushMessage
 }
