@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -42,9 +41,16 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 }
 
 func (a *App) handleSMS(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received SMS webhook")
 	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 
-	r.ParseForm()
+	err := r.ParseForm()
+	if err != nil {
+		log.Println("SMS webhook ", err)
+		http.Error(w, "failed", 500)
+		return
+	}
+
 	form := r.PostForm
 
 	messageId := atomic.AddUint64(&lastId, 1)
@@ -90,7 +96,6 @@ func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Not a websocket request", 400)
 		return
 	}
 	// Make sure we close the connection when the function returns

@@ -27,7 +27,8 @@ class App extends React.Component {
 
         let userId = getLocalStorageOrDefault("userId", getRandomInt)
         let username = getLocalStorageOrDefault("username", generateName)
-        let socket = new WebSocket(`ws://${window.location.host}/websocket?userId=${userId}`);
+        let protocol = window.location.protocol === "https:" ? "wss" : "ws";
+        let socket = new WebSocket(`${protocol}://${window.location.host}/websocket?userId=${userId}`);
 
         this.state = {
             username: username,
