@@ -1,3 +1,4 @@
+require('dotenv').config();
 const Request = require('request-promise-native');
 
 function postProactive(token) {
