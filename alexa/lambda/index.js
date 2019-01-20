@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk-core');
-const Request = require('request');
+const Request = require('request-promise-native');
 
 const FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.';
 const REPROMPT = 'How can I help?';
@@ -7,6 +7,7 @@ const WELCOME = 'Hello, welcome to Reverb. How can I help?';
 const GOODBYE = 'Goodbye.';
 const SENT = 'Sent.';
 const USERNAME_SET = 'Your username has been changed.'
+const SORRY_ERROR = 'Sorry, an error has occurred.';
 
 const API_ENDPOINT = 'https://www.xn--p18h.tk/api/newMessage';
 
@@ -91,17 +92,18 @@ const SendMessageIntentHandler = {
     },
     handle(handlerInput) {
         const request = getRequest(handlerInput);
-        Request.post({
+        return Request.post({
             uri: API_ENDPOINT,
             json: {
                 username: getName(handlerInput),
                 body: request.intent.slots.message.value
             }
+        }).then(function () {
+            return handlerInput.responseBuilder
+                .speak(SENT)
+                .withShouldEndSession(true)
+                .getResponse();
         });
-        return handlerInput.responseBuilder
-            .speak(SENT)
-            .withShouldEndSession(true)
-            .getResponse();
     }
 };
 
@@ -152,7 +154,7 @@ const ErrorHandler = {
     handle(handlerInput, error) {
         const request = handlerInput.requestEnvelope.request;
         console.log(`Error handled: ${error.message} ${JSON.stringify(request)}`);
-        var message = 'Sorry, an error has occurred.';
+        var message = SORRY_ERROR;
         if (process.env.DEBUG) {
             message = `Error for request=${JSON.stringify(request)}: ${error.message}`;
         }
