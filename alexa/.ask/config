@@ -23,7 +23,7 @@
             "codeUri": "lambda",
             "functionName": "reverb-skill",
             "handler": "index.handler",
-            "revisionId": "89ef370b-b80a-4b0c-b371-bf9157e65b06",
+            "revisionId": "5deb812d-b16c-44dc-9b4c-70113b02a056",
             "runtime": "nodejs8.10"
           }
         ]
