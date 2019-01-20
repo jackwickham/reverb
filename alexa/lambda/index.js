@@ -53,7 +53,7 @@ function getName(handlerInput) {
         return attr['username'];
     }
     else {
-        return setName(generateName());
+        return setName(handlerInput, generateName());
     }
 }
 
@@ -100,7 +100,7 @@ const SendMessageIntentHandler = {
         });
         return handlerInput.responseBuilder
             .speak(SENT)
-            .withShouldEndSession(false)
+            .withShouldEndSession(true)
             .getResponse();
     }
 };
@@ -114,7 +114,7 @@ const SetUsernameIntentHandler = {
         setName(handlerInput, request.intent.slots.username.value);
         return handlerInput.responseBuilder
             .speak(USERNAME_SET)
-            .withShouldEndSession(false)
+            .withShouldEndSession(true)
             .getResponse();
     }
 };
