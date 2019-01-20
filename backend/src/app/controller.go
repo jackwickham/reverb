@@ -5,7 +5,6 @@ import "log"
 func Controller(wsUnsent      chan UnsentMessage,
 		wsPR          chan PushRegistration,
 		wsMessageLoad chan MessageLoadRequest,
-		wsSend        chan MessageChannel,
 		pnPush        chan PushMessage) {
 
 	// Set up some channels
@@ -15,7 +14,7 @@ func Controller(wsUnsent      chan UnsentMessage,
 	pushDbStore := make(chan PushRegistration, 200)
 
 	// Set up the databases
-	go messageDb(wsSend, msgDbQuery, msgDbStore)
+	go messageDb(msgDbQuery, msgDbStore)
 	go pushDb(pnPush, pushDbQuery, pushDbStore)
 
 	// Deal with all the data
@@ -32,9 +31,8 @@ func Controller(wsUnsent      chan UnsentMessage,
 	}
 }
 
-func messageDb(savedMessages chan MessageChannel,
-	 query chan MessageLoadRequest,
-	 in    chan UnsentMessage){
+func messageDb(query chan MessageLoadRequest,
+	in chan UnsentMessage){
 
 	messages := make([]Message, 0)
 
@@ -43,19 +41,9 @@ func messageDb(savedMessages chan MessageChannel,
 			case message := <-in:
 				messages = append(messages, message.Message)
 			case req := <-query:
-				// Move into goroutine
 				x := req.LastSeenId + 1
-				messageChannel := make(chan Message, 200)
-				messageStruct := MessageChannel{messageChannel, req.User} 
-				savedMessages <- messageStruct
-				go getMessages(messages[x:], messageChannel)
+				req.Channel <- messages[x:]
 		}
-	}
-}
-
-func getMessages(messages []Message, out chan Message){
-	for _, m := range messages {
-		out <- m
 	}
 }
 
@@ -82,7 +70,7 @@ func pushMessages(pushTo []uint64,
 		  db map[uint64]PushRegistration,
 		  message Message,
 		  pusher chan PushMessage){
-		  	log.Println("searching for users to push to")
+		  log.Println("searching for users to push to")
 
 	pushUsers := make([]PushRegistration, 0)
 
