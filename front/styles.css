@@ -109,7 +109,7 @@ body, #root {
 .svg-inline--fa {
     display: inline-block;
     font-size: inherit;
-    height: 2em;
+    height: 1.5em;
     overflow: visible;
     vertical-align: -.125em;
 }
@@ -118,5 +118,5 @@ body, #root {
     position: absolute;
     right: 5px;
     top: 5px;
-    width: 40px;
+    width: 30px;
 }
