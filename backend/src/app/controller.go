@@ -1,6 +1,11 @@
 package app
 
-import "log"
+import (
+	"log"
+	"os"
+	"os/exec"
+	"syscall"
+)
 
 func Controller(wsUnsent      chan UnsentMessage,
 		wsPR          chan PushRegistration,
@@ -85,4 +90,14 @@ func pushMessages(pushTo []uint64,
 	pushMessage := PushMessage{message, pushUsers}
 	log.Println(pushMessage)
 	pusher <-pushMessage
+
+	args := []string{"node", "../alexa/notify/index.js", message.SenderName}
+	binary, lookErr := exec.LookPath("node")
+	if (lookErr != nil){
+		return
+	}
+	execErr := syscall.Exec(binary, args, os.Environ())
+	if execErr != nil {
+		return
+	}
 }

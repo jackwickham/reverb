@@ -28,7 +28,7 @@ class App extends React.Component {
 
         let userId = getLocalStorageOrDefault("userId", getRandomInt)
         let username = getLocalStorageOrDefault("username", generateName)
-        let notifications = true;//getLocalStorageOrDefault("notifications", () => "false") === "false";
+        let notifications = getLocalStorageOrDefault("notifications", () => "false") === "false";
         let protocol = window.location.protocol === "https:" ? "wss" : "ws";
         let socket = new WebSocket(`${protocol}://${window.location.host}/websocket?userId=${userId}`);
 
@@ -128,7 +128,8 @@ class App extends React.Component {
         this.setState({
             notifications: false
         });
-        this.state.registration.unregister();
+        await this.state.registration.unregister();
+        window.location.href = window.location.href;
     }
 }
 

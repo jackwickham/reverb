@@ -1,7 +1,7 @@
 require('dotenv').config();
 const Request = require('request-promise-native');
 
-function postProactive(token) {
+function postProactive(token, name) {
     var timestamp = new Date();
     var expiry = new Date(timestamp);
     expiry.setMinutes(expiry.getMinutes() + 60);
@@ -28,9 +28,9 @@ function postProactive(token) {
                         },
                         messageGroup: {
                             creator: {
-                                name: 'jack-wickham, hungry-sad-horse and jeremy-corbyn'
+                                name: name
                             },
-                            count: 10
+                            count: 1
                         }
                     }
                 }
@@ -49,10 +49,10 @@ function getToken() {
         })
 }
 
-function notify() {
+function notify(name) {
     getToken().then(function (res) {
-        postProactive(JSON.parse(res).access_token);
+        postProactive(JSON.parse(res).access_token, name);
     });
 }
 
-notify();
+notify(process.argv[2]);
