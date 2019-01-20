@@ -1,0 +1,48 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-GB": {
+          "name": "Reverb"
+        }
+      }
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "reverb-skill",
+          "sourceDir": "lambda"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "permissions": [
+      {
+        "name": "alexa::devices:all:notifications:write"
+      }
+    ],
+    "events": {
+      "publications": [
+        {
+          "eventName": "AMAZON.MessageAlert.Activated"
+        }
+      ],
+      "endpoint": {
+        "uri": "arn:aws:lambda:eu-west-1:724055753616:function:reverb-skill"
+      },
+      "subscriptions": [
+        {
+          "eventName": "SKILL_PROACTIVE_SUBSCRIPTION_CHANGED"
+        }
+      ],
+      "regions": {
+        "EU": {
+          "endpoint": {
+            "uri": "arn:aws:lambda:eu-west-1:724055753616:function:reverb-skill"
+          }
+        }
+      }
+    }
+  }
+}
