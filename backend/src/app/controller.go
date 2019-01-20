@@ -8,10 +8,10 @@ func Controller(wsUnsent      chan UnsentMessage,
 		pnPush        chan PushMessage) {
 
 	// Set up some channels
-	msgDbQuery  := make(chan MessageLoadRequest)
-	pushDbQuery := make(chan UnsentMessage)
-	msgDbStore  := make(chan UnsentMessage)
-	pushDbStore := make(chan PushRegistration)
+	msgDbQuery  := make(chan MessageLoadRequest, 200)
+	pushDbQuery := make(chan UnsentMessage, 200)
+	msgDbStore  := make(chan UnsentMessage, 200)
+	pushDbStore := make(chan PushRegistration, 200)
 
 	// Set up the databases
 	go mDB(wsSend, msgDbQuery, msgDbStore)
@@ -19,7 +19,7 @@ func Controller(wsUnsent      chan UnsentMessage,
 
 	// Deal with all the data
 	for{
-		select{
+		select {
 			case message := <-wsUnsent:
 				msgDbStore <- message
 				pushDbQuery <- message
@@ -62,8 +62,8 @@ func pDB(out   chan PushMessage,
 
 	pushRegs := make(map[uint64]PushRegistration)
 
-	for{
-		select{
+	for {
+		select {
 			case pushReg := <-in:
 				pushRegs[pushReg.User] = pushReg
 			case pushQuery := <-query:
