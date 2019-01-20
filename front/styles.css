@@ -1,0 +1,79 @@
+* {
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body, #root {
+    height: 100vh;
+    margin: 0;
+    text-align: center;
+}
+
+.pannel {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding: 10px;
+    text-align: center;
+    width: 70%; /* TODO: Make this work for small screens. */
+    height: 100%;
+    border-width: 0px 1px 0px 1px;
+    border-style: solid;
+    border-color: grey;
+    background-color: #F6F6F6;
+}
+
+.messages-container {
+    display: inline-block;
+    flex-grow: 1;
+    width: 100%;
+    list-style: none;
+    margin: 10px 0px 10px 0px;
+    padding: 0px 0px 10px 0px;
+    border-width: 1px 0px 1px 0px;
+    border-style: solid;
+    border-color: grey;
+    text-align: left;
+}
+
+.send-box-container {
+    display: flex;
+    flex-direction: row;
+    vertical-align: bottom;
+    height: 50px;
+}
+
+.send-box {
+    flex-grow: 1;
+}
+
+.send-button {
+    width: 70px;
+}
+
+.msg-left, .msg-right {
+    max-width: 60%;
+    padding-top: 10px;
+}
+
+.msg-left {
+}
+
+.msg-right {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+.msg-body {
+    border: 1px solid grey;
+    border-radius: 3px;
+    background-color: lightgrey;
+    padding: 5px;
+    word-wrap: break-word;
+}
+
+.msg-by {
+    color: grey;
+    font-size: 80%;
+    padding: 5px 5px 0px 5px;
+}

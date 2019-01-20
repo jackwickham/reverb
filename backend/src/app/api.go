@@ -130,6 +130,7 @@ func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 func (a *App) handleMessage() {
 	for {
 		msg := <- receiveBuffer
+		log.Println(msg)
 		sentTo := make([]uint64, len(sockets))
 		for k, v := range sockets {
 			err := v.WriteJSON(msg)
