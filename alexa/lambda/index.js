@@ -42,8 +42,8 @@ function getRequest(handlerInput) {
     return handlerInput.requestEnvelope.request;
 }
 
-async function getAttr(handlerInput) {
-    return await handlerInput.attributesManager.getPersistentAttributes();
+function getAttr(handlerInput) {
+    return handlerInput.attributesManager.getPersistentAttributes();
 }
 
 function setAttr(handlerInput, attr) {
@@ -52,20 +52,23 @@ function setAttr(handlerInput, attr) {
 }
 
 function setName(handlerInput, name) {
-    attr = getAttr(handlerInput);
-    attr['username'] = makeSafeName(name);
-    setAttr(handlerInput, attr);
-    return attr['username'];
+    return getAttr(handlerInput).then(attr => {
+        attr['username'] = makeSafeName(name);
+        console.log(attr['username']);
+        setAttr(handlerInput, attr);
+        return attr['username'];
+    });
 }
 
 function getName(handlerInput) {
-    attr = getAttr(handlerInput);
-    if (attr['username']) {
-        return attr['username'];
-    }
-    else {
-        return setName(handlerInput, generateName());
-    }
+    return getAttr(handlerInput).then(attr => {
+        if (attr['username']) {
+            return attr['username'];
+        }
+        else {
+            return setName(handlerInput, generateName());
+        }
+    });
 }
 
 function isIntentRequest(handlerInput, name) {
@@ -102,18 +105,19 @@ const SendMessageIntentHandler = {
     },
     handle(handlerInput) {
         const request = getRequest(handlerInput);
-        return Request.post({
-            uri: API_ENDPOINT,
-            json: {
-                username: getName(handlerInput),
-                body: request.intent.slots.message.value
-            }
-        }).then(function () {
-            return handlerInput.responseBuilder
-                .speak(SENT)
-                .withShouldEndSession(false)
-                .getResponse();
-        });
+        return getName(handlerInput).then(username => 
+            Request.post({
+                uri: API_ENDPOINT,
+                json: {
+                    username: username,
+                    body: request.intent.slots.message.value
+                }
+            }).then(function () {
+                return handlerInput.responseBuilder
+                    .speak(SENT)
+                    .withShouldEndSession(false)
+                    .getResponse();
+            }));
     }
 };
 
@@ -123,11 +127,11 @@ const SetUsernameIntentHandler = {
     },
     handle(handlerInput) {
         const request = getRequest(handlerInput);
-        setName(handlerInput, request.intent.slots.username.value);
-        return handlerInput.responseBuilder
-            .speak(USERNAME_SET)
-            .withShouldEndSession(false)
-            .getResponse();
+        return setName(handlerInput, request.intent.slots.username.value).then(name => 
+            handlerInput.responseBuilder
+                .speak(USERNAME_SET)
+                .withShouldEndSession(false)
+                .getResponse());
     }
 };
 
