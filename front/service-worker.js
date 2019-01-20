@@ -30,18 +30,14 @@ self.addEventListener('fetch', (event) => {
 const notifyTag = "reverb-notify";
 
 self.addEventListener('push', async function(event) {
-    console.log("running");
     event.waitUntil((async () => {
         let existingNotifications = await self.registration.getNotifications({tag: notifyTag});
         let pendingMessages = [];
         if (existingNotifications.length > 0) {
             pendingMessages = existingNotifications[0].data;
         }
-        console.log(pendingMessages);
         let data = event.data.json();
         pendingMessages.push(data);
-
-        console.log(pendingMessages);
 
         let users = pendingMessages.map(msg => msg.senderName).filter((v, i, arr) => arr.indexOf(v) === i);
         let userString;
@@ -70,8 +66,6 @@ self.addEventListener('push', async function(event) {
             title = `${pendingMessages.length} new messages from ${userString}`;
             body = pendingMessages.slice(0, 2).map(msg => msg.senderName + ": " + msg.body).join("\n") + `\nand ${pendingMessages.length - 2} more...`;
         }
-
-        console.log(title, body);
 
         await self.registration.showNotification(title, {
             body: body,

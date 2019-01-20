@@ -9,7 +9,7 @@ body, #root {
     text-align: center;
 }
 
-.pannel {
+.panel {
     display: flex;
     flex-direction: column;
     margin: auto;
@@ -96,4 +96,23 @@ body, #root {
     color: grey;
     font-size: 80%;
     padding: 5px 5px 0px 5px;
+}
+
+@media screen and (max-width: 1000px) {
+    .panel {
+        width: 750px;
+        max-width: calc(100vw - 20px);
+    }
+}
+
+.svg-inline--fa {
+    display: inline-block;
+    font-size: inherit;
+    height: 2em;
+    overflow: visible;
+    vertical-align: -.125em;
+}
+
+.notification-toggle {
+    float: right;
 }
