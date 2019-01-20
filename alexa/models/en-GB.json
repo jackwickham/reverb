@@ -38,7 +38,9 @@
             "say {message}",
             "send {message}",
             "tell everyone {message}",
-            "broadcast {message}"
+            "broadcast {message}",
+            "ask reverb to send {message}",
+            "ask reverb to broadcast {message}"
           ]
         },
         {
