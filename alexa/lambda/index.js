@@ -135,6 +135,32 @@ const SetUsernameIntentHandler = {
     }
 };
 
+const GetHistoryIntentHandler = {
+    canHandle(handlerInput) {
+        return isIntentRequest(handlerInput, 'GetHistoryIntent');
+    },
+    handle(handlerInput) {
+        return getAttr(handlerInput).then(function (attr) {
+            if (attr['last_read']) {
+                return handlerInput.responseBuilder
+                    .speak(attr['last_read'])
+                    .getResponse();
+            }
+        });
+    }
+};
+
+const MessageReceivedHandler = {
+    canHandle(handlerInput) {
+        const request = getRequest(handlerInput);
+        return request.type == 'Messaging.MessageReceived';
+    },
+    handle(handlerInput, context) {
+        console.log('Got a thing');
+        context.succeed();
+    }
+};
+
 const StopIntentHandler = {
     canHandle(handlerInput) {
         return isIntentRequest(handlerInput, 'AMAZON.StopIntent')
@@ -186,7 +212,9 @@ exports.handler =
             SendMessageIntentHandler,
             StopIntentHandler,
             SetUsernameIntentHandler,
-            FallbackIntentHandler
+            GetHistoryIntentHandler,
+            FallbackIntentHandler,
+            MessageReceivedHandler
         )
         .addErrorHandlers(
             ErrorHandler
