@@ -10,7 +10,7 @@
         },
         "interactionModel": {
           "en-GB": {
-            "eTag": "58f535576e1531e4b50eaf76f84580a8"
+            "eTag": "073ce5753faf5c3e77dbde9c82c01917"
           }
         },
         "lambda": [
@@ -23,7 +23,7 @@
             "codeUri": "lambda",
             "functionName": "reverb-skill",
             "handler": "index.handler",
-            "revisionId": "6f49efe1-4098-49a8-99a2-aa7b0447cc8a",
+            "revisionId": "681fdfcb-3e60-47d4-b87a-21d7fc0c2858",
             "runtime": "nodejs8.10"
           }
         ]

@@ -146,8 +146,8 @@ const GetHistoryIntentHandler = {
                 messages = attr['last_read'];
             }
             return handlerInput.responseBuilder
-                    .speak(messages)
-                    .getRequest();
+                .speak(messages)
+                .getResponse();
         });
     }
 };
