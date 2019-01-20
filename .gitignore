@@ -24,3 +24,6 @@
 
 .idea/
 /vscode/
+
+/backend/src/github.com
+/backend/main
