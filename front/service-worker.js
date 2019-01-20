@@ -9,7 +9,7 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-    event.respondWith(
+    /*event.respondWith(
         caches.match(event.request)
             .then((response) => {
                 if (response) {
@@ -24,5 +24,14 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 });
             })
-    );
+    );*/
 });
+
+self.addEventListener('push', function(event) {
+    let data = event.data.json();
+    let title = "New message from " + data.senderName;
+    self.waitUntil(self.registration.showNotification(title, {
+        body: data.body
+    }));
+});
+  

@@ -43,6 +43,8 @@ class App extends React.Component {
                 messages: [...this.state.messages, msg]
             });
         });
+
+        this.setUpServiceWorker();
     }
 
     sendMessage(msg) {
@@ -61,6 +63,39 @@ class App extends React.Component {
                 <SendBox send={this.sendMessage.bind(this)} />
             </div>
         )
+    }
+
+    async setUpServiceWorker() {
+        if ('serviceWorker' in navigator) {
+                let registration = await navigator.serviceWorker.register("/service-worker.js");
+                await new Promise(function(resolve, reject) {
+                    const permissionResult = Notification.requestPermission(function(result) {
+                        if (result === "granted") {
+                            resolve(result);
+                        } else {
+                            reject(result);
+                        }
+                    });
+                
+                    if (permissionResult) {
+                        permissionResult.then(resolve, reject);
+                    }
+                });
+        
+                const subscriptionOptions = {
+                    userVisibleOnly: true,
+                    applicationServerKey: 'BFKV91ywPyJnCK3ZK9sJdlAwdAV1CSHZnmRM4otYa4mPuN_4ZpcC2dnL8k0-ns-9V4JpQINxm-HUpR0h2oCx5aM'
+                };
+        
+                let pushSubscription = await registration.pushManager.subscribe(subscriptionOptions);
+
+                console.log("Registered push endpoint", pushSubscription);
+        
+                await fetch("/api/pushRegistration?userId=" + this.state.userId, {
+                    body: JSON.stringify(pushSubscription),
+                    method: "POST"
+                });
+        }
     }
 }
 
