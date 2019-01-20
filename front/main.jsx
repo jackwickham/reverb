@@ -43,6 +43,8 @@ class App extends React.Component {
                 messages: [...this.state.messages, msg]
             });
         });
+
+        this.setUpServiceWorker();
     }
 
     sendMessage(msg) {
@@ -62,13 +64,53 @@ class App extends React.Component {
             </div>
         )
     }
+
+    async setUpServiceWorker() {
+        if ('serviceWorker' in navigator) {
+            let registration = await navigator.serviceWorker.register("/service-worker.js");
+            await new Promise(function(resolve, reject) {
+                const permissionResult = Notification.requestPermission(function(result) {
+                    if (result === "granted") {
+                        resolve(result);
+                    } else {
+                        reject(result);
+                    }
+                });
+            
+                if (permissionResult) {
+                    permissionResult.then(resolve, reject);
+                }
+            });
+
+            const serverKeyBinaryString = atob("BFKV91ywPyJnCK3ZK9sJdlAwdAV1CSHZnmRM4otYa4mPuN/4ZpcC2dnL8k0+ns+9V4JpQINxm+HUpR0h2oCx5aM");
+            const serverKeyBuffer = new Uint8Array(65);
+            for (let i = 0; i < 65; i++) {
+                serverKeyBuffer[i] = serverKeyBinaryString.charCodeAt(i);
+            }
+    
+            const subscriptionOptions = {
+                userVisibleOnly: true,
+                applicationServerKey: serverKeyBuffer
+            };
+    
+            let pushSubscription = await registration.pushManager.subscribe(subscriptionOptions);
+
+            console.log("Registered push endpoint", pushSubscription);
+    
+            await fetch("/api/pushRegistration?userId=" + this.state.userId, {
+                body: JSON.stringify(pushSubscription),
+                method: "POST"
+            });
+        }
+    }
 }
 
 class Title extends React.Component {
     render() {
         return (
-            <div>
-                <h1>Reverb</h1>
+            <div class="title-section">
+                <h1 className="title">Reverb</h1>
+                <p className="username"><i>{this.props.username}</i></p>
             </div>
         );
     }
@@ -76,12 +118,19 @@ class Title extends React.Component {
 
 class MessagesContainer extends React.Component {
     render() {
-        let messages = this.props.messages.map(message => <li key={message.id}><Message msg={message} userId={this.props.userId}/></li>);
+        let messages = this.props.messages.map(message =>
+            <li key={message.id}>
+                <Message msg={message} userId={this.props.userId}/>
+            </li>
+        );
 
         return (
-            <ul className="messages-container">
-                {messages}
-            </ul>
+            <div className="messages-container" id="messages-container">
+                <ul className="messages-container-inner">
+                    {messages}
+                </ul>
+                <div id="messages-bottom"></div>
+            </div>
         )
     }
 }
@@ -115,29 +164,41 @@ class SendBox extends React.Component {
         }
     }
 
+    onEnterPress = (e) => {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            this.handleSubmit(e);
+        }
+    }
+
     render() {
         return (
             <form onSubmit={this.handleSubmit.bind(this)} className="send-box-container">
-                <textarea value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autofocus></textarea>
+                <textarea value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autoFocus onKeyDown={this.onEnterPress.bind(this)}></textarea>
                 <input type="submit" value="Send" className="send-button"></input>
             </form>
         );
     }
 
     handleSubmit(event) {
-        if (this.state.value) {
+        if (this.state.value.trim()) {
             this.props.send(this.state.value);
-            this.setState({
-                value: ""
-            });
         }
+        this.setState({
+            value: ""
+        });
         event.preventDefault();
     }
 
     handleChange(event) {
         this.setState({value: event.target.value});
     }
-}
+    
+    componentDidUpdate() {
+        document.getElementById('messages-bottom').scrollIntoView();
+    }
+
+ }
 
 const domContainer = document.getElementById('root');
 ReactDOM.render(<App/>, domContainer);

@@ -15,7 +15,7 @@ body, #root {
     margin: auto;
     padding: 10px;
     text-align: center;
-    width: 70%; /* TODO: Make this work for small screens. */
+    width: 70%;
     height: 100%;
     border-width: 0px 1px 0px 1px;
     border-style: solid;
@@ -23,28 +23,48 @@ body, #root {
     background-color: #F6F6F6;
 }
 
+.title-section {
+    padding-bottom: 10px;
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: grey;
+}
+
+.title, .username {
+    margin: 10px;
+}
+
 .messages-container {
     display: inline-block;
     flex-grow: 1;
     width: 100%;
-    list-style: none;
-    margin: 10px 0px 10px 0px;
-    padding: 0px 0px 10px 0px;
-    border-width: 1px 0px 1px 0px;
-    border-style: solid;
-    border-color: grey;
+    margin: 1px;
+    padding: 1px 20px 10px 0px;
     text-align: left;
+    overflow-y: scroll;
+}
+
+.messages-container-inner {
+    margin: 10px 0px 10px 0px;
+    padding-left: 10px;
+    list-style: none;
 }
 
 .send-box-container {
     display: flex;
     flex-direction: row;
     vertical-align: bottom;
-    height: 50px;
+    min-height: 60px;
+    padding-top: 10px;
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: grey;
 }
 
 .send-box {
     flex-grow: 1;
+    outline: none;
+    margin-right: 10px;
 }
 
 .send-button {

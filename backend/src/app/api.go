@@ -32,6 +32,7 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 	http.HandleFunc("/api/sms", app.handleSMS)
 	http.HandleFunc("/api/newMessage", app.handleNewMessageHttp)
 	http.HandleFunc("/websocket", app.handleWebsocketConnect)
+	http.HandleFunc("/api/pushRegistration", app.handlePushRegistration)
 	fs := http.FileServer(http.Dir("../front"))
 	http.Handle("/", fs)
 
@@ -84,6 +85,26 @@ func (a *App) handleNewMessageHttp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	receiveBuffer <- message
+}
+
+func (a *App) handlePushRegistration(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var msg PushRegistration
+	var err error
+	msg.User, err = strconv.ParseUint(r.URL.Query().Get("userId"), 10, 64)
+	if err != nil {
+		http.Error(w, "Missing or malformed user id", 400)
+		return
+	}
+	err = decoder.Decode(&msg)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+
+	a.pushRegistrationChannel <- msg
+	log.Println(msg)
 }
 
 func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
