@@ -46,6 +46,7 @@ body, #root {
 
 .messages-container-inner {
     margin: 10px 0px 10px 0px;
+    padding-left: 10px;
     list-style: none;
 }
 
