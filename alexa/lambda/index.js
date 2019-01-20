@@ -141,23 +141,14 @@ const GetHistoryIntentHandler = {
     },
     handle(handlerInput) {
         return getAttr(handlerInput).then(function (attr) {
+            var messages = 'No new messages';
             if (attr['last_read']) {
-                return handlerInput.responseBuilder
-                    .speak(attr['last_read'])
-                    .getResponse();
+                messages = attr['last_read'];
             }
+            return handlerInput.responseBuilder
+                    .speak(messages)
+                    .getRequest();
         });
-    }
-};
-
-const MessageReceivedHandler = {
-    canHandle(handlerInput) {
-        const request = getRequest(handlerInput);
-        return request.type == 'Messaging.MessageReceived';
-    },
-    handle(handlerInput, context) {
-        console.log('Got a thing');
-        context.succeed();
     }
 };
 
@@ -213,8 +204,7 @@ exports.handler =
             StopIntentHandler,
             SetUsernameIntentHandler,
             GetHistoryIntentHandler,
-            FallbackIntentHandler,
-            MessageReceivedHandler
+            FallbackIntentHandler
         )
         .addErrorHandlers(
             ErrorHandler
