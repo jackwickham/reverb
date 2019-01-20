@@ -1,12 +1,55 @@
+const ADJECTIVES = [ 'fun', 'sad', 'happy', 'basic', 'large', 'important', 'different', 'available', 'popular', 'able', 'hot', 'scared', 'old', 'healthy', 'traditional', 'strong', 'successful', 'nyan' ];
+const NOUNS = [ 'horse', 'cat', 'dog', 'giraffe', 'book', 'business', 'child', 'country', 'eyeball', 'fact', 'hand', 'seaman', 'student', 'person', 'thing', 'family', 'group', 'prime-minster', 'pig', ];
+
+function generateName() {
+    return `${randFrom(ADJECTIVES)}-${randFrom(ADJECTIVES)}-${randFrom(NOUNS)}`;
+}
+
+function getLocalStorageOrDefault(key, defaultGenerator) {
+    let value = localStorage.getItem(key);
+    if (value == null) {
+        value = defaultGenerator();
+        localStorage.setItem(key, value);
+    }
+    return value;
+}
+
+function getRandomInt() {
+    return Math.floor(Math.random() * Math.floor(Number.MAX_SAFE_INTEGER));
+}
+function randFrom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+} 
+
 class App extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
+
+        let userId = getLocalStorageOrDefault("userId", getRandomInt)
+        let username = getLocalStorageOrDefault("username", generateName)
+        let socket = new WebSocket(`ws://${window.location.host}/websocket?userId=${userId}`);
 
         this.state = {
-            username: "this-is-my-username",
-            userId: 3,
-            messages: [{sender: 3, id: 1, senderName: "person 3", body: "blah blah blah"}, {sender: 5, id: 2, senderName: "person 5", body: "mah body"}]
+            username: username,
+            userId: userId,
+            messages: [],
+            socket: socket
         }
+
+        socket.addEventListener("message", ev => {
+            let msg = JSON.parse(ev.data);
+            this.setState({
+                messages: [...this.state.messages, msg]
+            });
+        });
+    }
+
+    sendMessage(msg) {
+        this.state.socket.send(JSON.stringify({
+            sender: this.state.userId,
+            username: this.state.username,
+            body: msg
+        }));
     }
 
     render() {
@@ -14,7 +57,7 @@ class App extends React.Component {
             <div>
                 <Title username={this.state.username} />
                 <MessagesContainer messages={this.state.messages} userId={this.state.userId} />
-                <SendBox />
+                <SendBox send={this.sendMessage.bind(this)} />
             </div>
         )
     }
@@ -65,10 +108,34 @@ class Message extends React.Component {
 }
 
 class SendBox extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            value: ""
+        }
+    }
+
     render() {
         return (
-            <p>Send box coming soon</p>
+            <form onSubmit={this.handleSubmit.bind(this)}>
+                <textarea value={this.state.value} onChange={this.handleChange.bind(this)}></textarea>
+                <input type="submit" value="Send"></input>
+            </form>
         );
+    }
+
+    handleSubmit(event) {
+        if (this.state.value) {
+            this.props.send(this.state.value);
+            this.setState({
+                value: ""
+            });
+        }
+        event.preventDefault();
+    }
+
+    handleChange(event) {
+        this.setState({value: event.target.value});
     }
 }
 

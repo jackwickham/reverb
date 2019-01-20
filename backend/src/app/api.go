@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
@@ -46,6 +47,14 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 }
 
 func (a *App) handleSMS(w http.ResponseWriter, r *http.Request) {
+	buf, bodyErr := ioutil.ReadAll(r.Body)
+	if bodyErr != nil {
+		log.Println("bodyErr ", bodyErr.Error())
+		http.Error(w, bodyErr.Error(), 500)
+	} else {
+		log.Println("body content ", buf)
+	}
+	return
 	decoder := json.NewDecoder(r.Body)
 	var msg SMSMessage
 	err := decoder.Decode(&msg)
@@ -135,17 +144,13 @@ func (a *App) handleMessage() {
 		msg := <- receiveBuffer
 		sentTo := make([]uint64, len(sockets))
 		for k, v := range sockets {
-			if k == msg.Sender {
-				sentTo = append(sentTo, k)
+			err := v.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error %v\n", err)
+				v.Close()
+				delete(sockets, k)
 			} else {
-				err := v.WriteJSON(msg)
-				if err != nil {
-					log.Printf("error %v", err)
-					v.Close()
-					delete(sockets, k)
-				} else {
-					sentTo = append(sentTo, k)
-				}
+				sentTo = append(sentTo, k)
 			}
 		}
 		a.newMsgChannel <- UnsentMessage{msg, sentTo}
