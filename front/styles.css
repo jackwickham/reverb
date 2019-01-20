@@ -28,6 +28,7 @@ body, #root {
     border-width: 0px 0px 1px 0px;
     border-style: solid;
     border-color: grey;
+    position: relative;
 }
 
 .title, .username {
@@ -114,5 +115,8 @@ body, #root {
 }
 
 .notification-toggle {
-    float: right;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 40px;
 }
