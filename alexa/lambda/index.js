@@ -101,7 +101,7 @@ const SendMessageIntentHandler = {
         }).then(function () {
             return handlerInput.responseBuilder
                 .speak(SENT)
-                .withShouldEndSession(true)
+                .withShouldEndSession(false)
                 .getResponse();
         });
     }
@@ -116,7 +116,7 @@ const SetUsernameIntentHandler = {
         setName(handlerInput, request.intent.slots.username.value);
         return handlerInput.responseBuilder
             .speak(USERNAME_SET)
-            .withShouldEndSession(true)
+            .withShouldEndSession(false)
             .getResponse();
     }
 };
