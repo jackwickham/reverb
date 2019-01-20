@@ -28,6 +28,7 @@ body, #root {
     border-width: 0px 0px 1px 0px;
     border-style: solid;
     border-color: grey;
+    position: relative;
 }
 
 .title, .username {
@@ -108,11 +109,14 @@ body, #root {
 .svg-inline--fa {
     display: inline-block;
     font-size: inherit;
-    height: 2em;
+    height: 1.5em;
     overflow: visible;
     vertical-align: -.125em;
 }
 
 .notification-toggle {
-    float: right;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    width: 30px;
 }
