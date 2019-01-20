@@ -1,4 +1,5 @@
 const Alexa = require('ask-sdk-core');
+const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 const Request = require('request-promise-native');
 
 const FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.';
@@ -41,21 +42,33 @@ function getRequest(handlerInput) {
     return handlerInput.requestEnvelope.request;
 }
 
+function getAttr(handlerInput) {
+    return handlerInput.attributesManager.getPersistentAttributes();
+}
+
+function setAttr(handlerInput, attr) {
+    handlerInput.attributesManager.setPersistentAttributes(attr);
+    handlerInput.attributesManager.savePersistentAttributes();
+}
+
 function setName(handlerInput, name) {
-    attr = handlerInput.attributesManager.getSessionAttributes();
-    attr['username'] = makeSafeName(name);
-    handlerInput.attributesManager.setSessionAttributes(attr);
-    return attr['username'];
+    return getAttr(handlerInput).then(attr => {
+        attr['username'] = makeSafeName(name);
+        console.log(attr['username']);
+        setAttr(handlerInput, attr);
+        return attr['username'];
+    });
 }
 
 function getName(handlerInput) {
-    attr = handlerInput.attributesManager.getSessionAttributes();
-    if (attr['username']) {
-        return attr['username'];
-    }
-    else {
-        return setName(handlerInput, generateName());
-    }
+    return getAttr(handlerInput).then(attr => {
+        if (attr['username']) {
+            return attr['username'];
+        }
+        else {
+            return setName(handlerInput, generateName());
+        }
+    });
 }
 
 function isIntentRequest(handlerInput, name) {
@@ -92,18 +105,19 @@ const SendMessageIntentHandler = {
     },
     handle(handlerInput) {
         const request = getRequest(handlerInput);
-        return Request.post({
-            uri: API_ENDPOINT,
-            json: {
-                username: getName(handlerInput),
-                body: request.intent.slots.message.value
-            }
-        }).then(function () {
-            return handlerInput.responseBuilder
-                .speak(SENT)
-                .withShouldEndSession(false)
-                .getResponse();
-        });
+        return getName(handlerInput).then(username => 
+            Request.post({
+                uri: API_ENDPOINT,
+                json: {
+                    username: username,
+                    body: request.intent.slots.message.value
+                }
+            }).then(function () {
+                return handlerInput.responseBuilder
+                    .speak(SENT)
+                    .withShouldEndSession(false)
+                    .getResponse();
+            }));
     }
 };
 
@@ -113,11 +127,11 @@ const SetUsernameIntentHandler = {
     },
     handle(handlerInput) {
         const request = getRequest(handlerInput);
-        setName(handlerInput, request.intent.slots.username.value);
-        return handlerInput.responseBuilder
-            .speak(USERNAME_SET)
-            .withShouldEndSession(false)
-            .getResponse();
+        return setName(handlerInput, request.intent.slots.username.value).then(name => 
+            handlerInput.responseBuilder
+                .speak(USERNAME_SET)
+                .withShouldEndSession(false)
+                .getResponse());
     }
 };
 
@@ -176,5 +190,11 @@ exports.handler =
         )
         .addErrorHandlers(
             ErrorHandler
+        )
+        .withPersistenceAdapter(
+            new DynamoDbPersistenceAdapter({
+                tableName: 'reverb-alexa-persistence',
+                createTable: true
+            })
         )
         .lambda();
