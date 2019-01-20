@@ -2,6 +2,9 @@ require('dotenv').config();
 const Request = require('request-promise-native');
 
 function postProactive(token) {
+    var timestamp = new Date();
+    var expiry = new Date(timestamp);
+    expiry.setMinutes(expiry.getMinutes() + 60);
     return Request.post(
         'https://api.eu.amazonalexa.com/v1/proactiveEvents/stages/development',
         {
@@ -9,15 +12,27 @@ function postProactive(token) {
                 'Authorization' : 'Bearer ' + token
             },
             json: {
-                state: {
-                    status: 'UNREAD',
-                    freshness: 'NEW'
+                timestamp: timestamp,
+                referenceId: "ID" + timestamp.getTime(),
+                expiryTime: expiry,
+                relevantAudience: {
+                    type: 'Multicast',
+                    payload: {}
                 },
-                messageGroup: {
-                    creator: {
-                        name: 'JumboJimbo'
-                    },
-                    count: 10
+                event: {
+                    name: 'AMAZON.MessageAlert.Activated',
+                    payload: {
+                        state: {
+                            status: 'UNREAD',
+                            freshness: 'NEW'
+                        },
+                        messageGroup: {
+                            creator: {
+                                name: 'JumboJimbo'
+                            },
+                            count: 10
+                        }
+                    }
                 }
             }
         }
@@ -35,8 +50,8 @@ function getToken() {
 }
 
 function notify() {
-    getToken().then(function (token) {
-        postProactive(token);
+    getToken().then(function (res) {
+        postProactive(JSON.parse(res).access_token);
     });
 }
 
