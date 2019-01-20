@@ -1,5 +1,5 @@
 {
-  "name": "reverb-alexa-skill",
+  "name": "reverb-notify",
   "version": "0.1.0",
   "description": "A messaging system for Alexa and others",
   "main": "index.js",
@@ -11,9 +11,8 @@
   "license": "MIT",
   "repository": "github:jackwickham/reverb",
   "dependencies": {
-    "ask-sdk-core": "^2.0.0",
-    "ask-sdk-model": "^1.0.0",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5"
+    "request-promise-native": "^1.0.5",
+    "dotenv": "^6.2.0"
   }
 }
