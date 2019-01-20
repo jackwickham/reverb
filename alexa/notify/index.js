@@ -1,27 +1,30 @@
 const Request = require('request-promise-native');
 
 function postProactive(token) {
-    return Request.post('api.eu.amazonalexa.com/v1/proactiveEvents/stages/development', {
-        headers: {
-            'Authorization' : 'Bearer ' + token
-        },
-        json: {
-            state: {
-                status: 'UNREAD',
-                freshness: 'NEW'
+    return Request.post(
+        'https://api.eu.amazonalexa.com/v1/proactiveEvents/stages/development',
+        {
+            headers: {
+                'Authorization' : 'Bearer ' + token
             },
-            messageGroup: {
-                creator: {
-                    name: 'JumboJimbo'
+            json: {
+                state: {
+                    status: 'UNREAD',
+                    freshness: 'NEW'
                 },
-                count: 10
+                messageGroup: {
+                    creator: {
+                        name: 'JumboJimbo'
+                    },
+                    count: 10
+                }
             }
         }
-    });
+    );
 }
 
 function getToken() {
-    return Request.post('api.amazon.com/auth/O2/token')
+    return Request.post('https://api.amazon.com/auth/O2/token')
         .form({
             grant_type: 'client_credentials',
             scope: 'alexa::proactive_events',
