@@ -23,6 +23,10 @@ body, #root {
     background-color: #F6F6F6;
 }
 
+.title, .username {
+    margin: 10px;
+}
+
 .messages-container {
     display: inline-block;
     flex-grow: 1;
@@ -34,6 +38,7 @@ body, #root {
     border-style: solid;
     border-color: grey;
     text-align: left;
+    overflow: auto;
 }
 
 .send-box-container {
@@ -45,6 +50,8 @@ body, #root {
 
 .send-box {
     flex-grow: 1;
+    outline: none;
+    margin-right: 10px;
 }
 
 .send-button {

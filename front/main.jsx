@@ -67,7 +67,8 @@ class Title extends React.Component {
     render() {
         return (
             <div>
-                <h1>Reverb</h1>
+                <h1 className="title">Reverb</h1>
+                <p className="username"><i>{this.props.username}</i></p>
             </div>
         );
     }
@@ -117,7 +118,7 @@ class SendBox extends React.Component {
     render() {
         return (
             <form onSubmit={this.handleSubmit.bind(this)} className="send-box-container">
-                <textarea value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autofocus></textarea>
+                <input value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autoFocus></input>
                 <input type="submit" value="Send" className="send-button"></input>
             </form>
         );
