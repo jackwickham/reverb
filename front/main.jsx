@@ -67,7 +67,7 @@ class App extends React.Component {
 class Title extends React.Component {
     render() {
         return (
-            <div>
+            <div class="title-section">
                 <h1 className="title">Reverb</h1>
                 <p className="username"><i>{this.props.username}</i></p>
             </div>

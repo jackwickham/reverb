@@ -23,6 +23,13 @@ body, #root {
     background-color: #F6F6F6;
 }
 
+.title-section {
+    padding-bottom: 10px;
+    border-width: 0px 0px 1px 0px;
+    border-style: solid;
+    border-color: grey;
+}
+
 .title, .username {
     margin: 10px;
 }
@@ -31,16 +38,14 @@ body, #root {
     display: inline-block;
     flex-grow: 1;
     width: 100%;
-    margin: 10px 0px 10px 0px;
-    padding: 0px 0px 10px 0px;
-    border-width: 1px 0px 1px 0px;
-    border-style: solid;
-    border-color: grey;
+    margin: 1px;
+    padding: 1px 20px 10px 0px;
     text-align: left;
-    overflow: auto;
+    overflow-y: scroll;
 }
 
 .messages-container-inner {
+    margin: 10px 0px 10px 0px;
     list-style: none;
 }
 
@@ -48,7 +53,11 @@ body, #root {
     display: flex;
     flex-direction: row;
     vertical-align: bottom;
-    min-height: 50px;
+    min-height: 60px;
+    padding-top: 10px;
+    border-width: 1px 0px 0px 0px;
+    border-style: solid;
+    border-color: grey;
 }
 
 .send-box {
