@@ -1,0 +1,95 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "reverb",
+      "intents": [
+        {
+          "name": "AMAZON.FallbackIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "SendMessageIntent",
+          "slots": [
+            {
+              "name": "message",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "tell everyone that {message}",
+            "reverb {message}",
+            "send {message} to everyone",
+            "say {message}",
+            "send {message}",
+            "tell everyone {message}",
+            "broadcast {message}"
+          ]
+        },
+        {
+          "name": "SetUsernameIntent",
+          "slots": [
+            {
+              "name": "username",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "set name to {username} ",
+            "set username to {username}",
+            "set my name to {username}",
+            "set my username to {username}"
+          ]
+        }
+      ],
+      "types": []
+    },
+    "dialog": {
+      "intents": [
+        {
+          "name": "SetUsernameIntent",
+          "confirmationRequired": true,
+          "prompts": {
+            "confirmation": "Confirm.Intent.1341531203510"
+          },
+          "slots": [
+            {
+              "name": "username",
+              "type": "AMAZON.SearchQuery",
+              "elicitationRequired": false,
+              "confirmationRequired": false,
+              "prompts": {}
+            }
+          ]
+        }
+      ],
+      "delegationStrategy": "ALWAYS"
+    },
+    "prompts": [
+      {
+        "id": "Confirm.Intent.1341531203510",
+        "variations": [
+          {
+            "type": "PlainText",
+            "value": "Would you like to set your username to be {username} ?"
+          }
+        ]
+      }
+    ]
+  }
+}
