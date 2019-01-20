@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk-core');
-const { DynamoPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
+const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 const Request = require('request-promise-native');
 
 const FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.';
@@ -188,8 +188,9 @@ exports.handler =
             ErrorHandler
         )
         .withPersistenceAdapter(
-            new DynamoPersistenceAdapter({
-                tableName: 'reverb-alexa-persistence'
+            new DynamoDbPersistenceAdapter({
+                tableName: 'reverb-alexa-persistence',
+                createTable: true
             })
         )
         .lambda();
