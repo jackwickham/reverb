@@ -13,7 +13,7 @@ function postProactive(token) {
             },
             json: {
                 timestamp: timestamp,
-                referenceId: "ID" + timestamp.getTime(),
+                referenceId: "NewMessageReferenceId",
                 expiryTime: expiry,
                 relevantAudience: {
                     type: 'Multicast',
@@ -28,7 +28,7 @@ function postProactive(token) {
                         },
                         messageGroup: {
                             creator: {
-                                name: 'JumboJimbo'
+                                name: 'jack-wickham, hungry-sad-horse and jeremy-corbyn'
                             },
                             count: 10
                         }
