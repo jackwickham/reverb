@@ -53,7 +53,7 @@ function getName(handlerInput) {
         return attr['username'];
     }
     else {
-        return setName(generateName());
+        return setName(handlerInput, generateName());
     }
 }
 
