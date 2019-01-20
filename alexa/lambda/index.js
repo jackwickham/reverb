@@ -137,8 +137,8 @@ const SetUsernameIntentHandler = {
 
 const StopIntentHandler = {
     canHandle(handlerInput) {
-        return isIntentRequest(handlerInput, 'StopIntent')
-            || isIntentRequest(handlerInput, 'NavigateHomeIntent')
+        return isIntentRequest(handlerInput, 'AMAZON.StopIntent')
+            || isIntentRequest(handlerInput, 'AMAZON.NavigateHomeIntent')
             || isEndRequest(handlerInput);
     },
     handle(handlerInput) {
