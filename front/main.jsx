@@ -67,34 +67,40 @@ class App extends React.Component {
 
     async setUpServiceWorker() {
         if ('serviceWorker' in navigator) {
-                let registration = await navigator.serviceWorker.register("/service-worker.js");
-                await new Promise(function(resolve, reject) {
-                    const permissionResult = Notification.requestPermission(function(result) {
-                        if (result === "granted") {
-                            resolve(result);
-                        } else {
-                            reject(result);
-                        }
-                    });
-                
-                    if (permissionResult) {
-                        permissionResult.then(resolve, reject);
+            let registration = await navigator.serviceWorker.register("/service-worker.js");
+            await new Promise(function(resolve, reject) {
+                const permissionResult = Notification.requestPermission(function(result) {
+                    if (result === "granted") {
+                        resolve(result);
+                    } else {
+                        reject(result);
                     }
                 });
-        
-                const subscriptionOptions = {
-                    userVisibleOnly: true,
-                    applicationServerKey: 'BFKV91ywPyJnCK3ZK9sJdlAwdAV1CSHZnmRM4otYa4mPuN_4ZpcC2dnL8k0-ns-9V4JpQINxm-HUpR0h2oCx5aM'
-                };
-        
-                let pushSubscription = await registration.pushManager.subscribe(subscriptionOptions);
+            
+                if (permissionResult) {
+                    permissionResult.then(resolve, reject);
+                }
+            });
 
-                console.log("Registered push endpoint", pushSubscription);
-        
-                await fetch("/api/pushRegistration?userId=" + this.state.userId, {
-                    body: JSON.stringify(pushSubscription),
-                    method: "POST"
-                });
+            const serverKeyBinaryString = atob("BFKV91ywPyJnCK3ZK9sJdlAwdAV1CSHZnmRM4otYa4mPuN/4ZpcC2dnL8k0+ns+9V4JpQINxm+HUpR0h2oCx5aM");
+            const serverKeyBuffer = new Uint8Array(65);
+            for (let i = 0; i < 65; i++) {
+                serverKeyBuffer[i] = serverKeyBinaryString.charCodeAt(i);
+            }
+    
+            const subscriptionOptions = {
+                userVisibleOnly: true,
+                applicationServerKey: serverKeyBuffer
+            };
+    
+            let pushSubscription = await registration.pushManager.subscribe(subscriptionOptions);
+
+            console.log("Registered push endpoint", pushSubscription);
+    
+            await fetch("/api/pushRegistration?userId=" + this.state.userId, {
+                body: JSON.stringify(pushSubscription),
+                method: "POST"
+            });
         }
     }
 }
