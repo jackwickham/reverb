@@ -28,13 +28,40 @@ var receiveBuffer = make(chan Message, 200)
 
 func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegistration, getMessagesChannel chan MessageLoadRequest) {
 	app := &App{newMsgChannel, pushRegistrationChannel, getMessagesChannel}
-
+	
+	http.HandleFunc("/api/sms", app.handleSMS)
 	http.HandleFunc("/api/newMessage", app.handleNewMessageHttp)
 	http.HandleFunc("/websocket", app.handleWebsocketConnect)
+	fs := http.FileServer(http.Dir("../front"))
+	http.Handle("/", fs)
 
 	go app.handleMessage()
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func (a *App) handleSMS(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received SMS webhook")
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	err := r.ParseForm()
+	if err != nil {
+		log.Println("SMS webhook ", err)
+		http.Error(w, "failed", 500)
+		return
+	}
+
+	form := r.PostForm
+
+	messageId := atomic.AddUint64(&lastId, 1)
+	message := Message{
+		0,
+		messageId,
+		form.Get("From"),
+		form.Get("Body"),
+	}
+
+	receiveBuffer <- message 
 }
 
 func (a *App) handleNewMessageHttp(w http.ResponseWriter, r *http.Request) {
@@ -69,7 +96,6 @@ func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 	ws, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
-		http.Error(w, "Not a websocket request", 400)
 		return
 	}
 	// Make sure we close the connection when the function returns
@@ -106,17 +132,13 @@ func (a *App) handleMessage() {
 		msg := <- receiveBuffer
 		sentTo := make([]uint64, len(sockets))
 		for k, v := range sockets {
-			if k == msg.Sender {
-				sentTo = append(sentTo, k)
+			err := v.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error %v\n", err)
+				v.Close()
+				delete(sockets, k)
 			} else {
-				err := v.WriteJSON(msg)
-				if err != nil {
-					log.Printf("error %v", err)
-					v.Close()
-					delete(sockets, k)
-				} else {
-					sentTo = append(sentTo, k)
-				}
+				sentTo = append(sentTo, k)
 			}
 		}
 		a.newMsgChannel <- UnsentMessage{msg, sentTo}

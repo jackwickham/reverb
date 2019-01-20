@@ -2,7 +2,6 @@ package main
 
 import (
 	"app"
-	"fmt"
 )
 
 func main() {
@@ -18,9 +17,6 @@ func main() {
 
 	// Wait forever
 	for {
-		select {
-			case m := <- newMessageChannel:
-				fmt.Printf("Processed %s", m)
-		}
+		select { }
 	}
 }
