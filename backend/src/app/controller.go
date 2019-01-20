@@ -42,7 +42,11 @@ func messageDb(query chan MessageLoadRequest,
 				messages = append(messages, message.Message)
 			case req := <-query:
 				x := req.LastSeenId + 1
-				req.Channel <- messages[x:]
+				if x > 1 {
+					req.Channel <- messages[x:]
+				} else {
+					req.Channel <- messages
+				}
 		}
 	}
 }

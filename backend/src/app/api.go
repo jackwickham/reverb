@@ -124,6 +124,22 @@ func (a *App) handleWebsocketConnect(w http.ResponseWriter, r *http.Request) {
 
 	sockets[userId] = ws
 
+	c := make(chan []Message)
+	a.getMessagesChannel <- MessageLoadRequest{0, userId, c}
+	msgs := <- c
+	if len(msgs) > 100 {
+		msgs = msgs[len(msgs) - 100:]
+	}
+	if len(msgs) > 1 {
+		for _, msg := range msgs {
+			err := ws.WriteJSON(msg)
+			if err != nil {
+				log.Printf("error %v\n", err)
+			}
+		}
+	}
+
+
 	for {
 		var msg IncomingMessage
 		// Read in a new message as JSON and map it to a Message object
