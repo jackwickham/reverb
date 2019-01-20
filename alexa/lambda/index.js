@@ -1,4 +1,5 @@
 const Alexa = require('ask-sdk-core');
+const { PersistenceAdapter: DynamoPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 const Request = require('request-promise-native');
 
 const FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.';
@@ -41,15 +42,23 @@ function getRequest(handlerInput) {
     return handlerInput.requestEnvelope.request;
 }
 
+function getAttr(handlerInput) {
+    return handlerInput.attributesManager.getPersistentAttributes();
+}
+
+function setAttr(handlerInput, attr) {
+    return handlerInput.attributesManager.setPersistentAttributes(attr);
+}
+
 function setName(handlerInput, name) {
-    attr = handlerInput.attributesManager.getSessionAttributes();
+    attr = getAttr(handlerInput);
     attr['username'] = makeSafeName(name);
-    handlerInput.attributesManager.setSessionAttributes(attr);
+    setAttr(handlerInput, attr);
     return attr['username'];
 }
 
 function getName(handlerInput) {
-    attr = handlerInput.attributesManager.getSessionAttributes();
+    attr = getAttr(handlerInput);
     if (attr['username']) {
         return attr['username'];
     }
@@ -176,5 +185,10 @@ exports.handler =
         )
         .addErrorHandlers(
             ErrorHandler
+        )
+        .withPersistenceAdapter(
+            new DynamoPersistenceAdapter({
+                tableName: 'reverb-alexa-persistence'
+            })
         )
         .lambda();
