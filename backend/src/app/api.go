@@ -21,11 +21,6 @@ type IncomingMessage struct {
 	Body string `json:"body"`
 }
 
-type SMSMessage struct {
-	SenderName string `json:"from"`
-	Body string `json:"body"`
-}
-
 var upgrader = websocket.Upgrader{}
 var lastId uint64 = 0
 var sockets = make(map[uint64]*websocket.Conn)
@@ -46,21 +41,17 @@ func Api(newMsgChannel chan UnsentMessage, pushRegistrationChannel chan PushRegi
 }
 
 func (a *App) handleSMS(w http.ResponseWriter, r *http.Request) {
-	decoder := json.NewDecoder(r.Body)
-	var msg SMSMessage
-	err := decoder.Decode(&msg)
-	if err != nil {
-		log.Println(err)
-		http.Error(w, "Invalid request body", 400)
-		return
-	}
+	r.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+	r.ParseForm()
+	form := r.PostForm
 
 	messageId := atomic.AddUint64(&lastId, 1)
 	message := Message{
 		0,
 		messageId,
-		msg.SenderName,
-		msg.Body,
+		form.Get("From"),
+		form.Get("Body"),
 	}
 
 	receiveBuffer <- message 
