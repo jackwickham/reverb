@@ -6,7 +6,7 @@
       "merge": {},
       "resources": {
         "manifest": {
-          "eTag": "2466838ab6b0fe23cb86491194f7e62e"
+          "eTag": "b20d44e770f44d7c397bb7e870ccf4fd"
         },
         "interactionModel": {
           "en-GB": {
@@ -23,7 +23,7 @@
             "codeUri": "lambda",
             "functionName": "reverb-skill",
             "handler": "index.handler",
-            "revisionId": "70d816ad-f4af-432d-a79e-931459e698d3",
+            "revisionId": "89ef370b-b80a-4b0c-b371-bf9157e65b06",
             "runtime": "nodejs8.10"
           }
         ]
