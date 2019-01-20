@@ -5,7 +5,7 @@ import "log"
 func Controller(wsUnsent      chan UnsentMessage,
 		wsPR          chan PushRegistration,
 		wsMessageLoad chan MessageLoadRequest,
-		wsSend        chan Message,
+		wsSend        chan MessageChannel,
 		pnPush        chan PushMessage) {
 
 	// Set up some channels
@@ -32,7 +32,7 @@ func Controller(wsUnsent      chan UnsentMessage,
 	}
 }
 
-func messageDb(savedMessages chan Message,
+func messageDb(savedMessages chan MessageChannel,
 	 query chan MessageLoadRequest,
 	 in    chan UnsentMessage){
 
@@ -45,7 +45,10 @@ func messageDb(savedMessages chan Message,
 			case req := <-query:
 				// Move into goroutine
 				x := req.LastSeenId + 1
-				go getMessages(messages[x:], savedMessages)
+				messageChannel := make(chan Message, 200)
+				messageStruct := MessageChannel{messageChannel, req.User} 
+				savedMessages <- messageStruct
+				go getMessages(messages[x:], messageChannel)
 		}
 	}
 }
@@ -84,16 +87,7 @@ func pushMessages(pushTo []uint64,
 	pushUsers := make([]PushRegistration, 0)
 
 	for userKey := range db {
-		sendUser := true
-		for _, user := range pushTo {
-			if user == userKey {
-				sendUser = false
-				break
-			}
-		}
-		if sendUser || true {
-			pushUsers = append(pushUsers, db[userKey])
-		}
+		pushUsers = append(pushUsers, db[userKey])
 	}
 
 	pushMessage := PushMessage{message, pushUsers}
