@@ -55,7 +55,7 @@ class App extends React.Component {
 
     render() {
         return (
-            <div>
+            <div className="pannel">
                 <Title username={this.state.username} />
                 <MessagesContainer messages={this.state.messages} userId={this.state.userId} />
                 <SendBox send={this.sendMessage.bind(this)} />
@@ -69,7 +69,6 @@ class Title extends React.Component {
         return (
             <div>
                 <h1>Reverb</h1>
-                <p>{this.props.username}</p>
             </div>
         );
     }
@@ -91,7 +90,7 @@ class Message extends React.Component {
     render() {
         let msg = this.props.msg;
         let by, fromUs;
-        if (msg.sender === this.props.userId) {
+        if (msg.sender == this.props.userId) {
             by = "you";
             fromUs = true;
         } else {
@@ -101,8 +100,8 @@ class Message extends React.Component {
 
         return (
             <div className={fromUs ? "msg-right" : "msg-left"}>
-                <div className="msg-by">{by}</div>
                 <div className="msg-body">{msg.body}</div>
+                <div className="msg-by">{by}</div>
             </div>
         );
     }
@@ -118,9 +117,9 @@ class SendBox extends React.Component {
 
     render() {
         return (
-            <form onSubmit={this.handleSubmit.bind(this)}>
-                <textarea value={this.state.value} onChange={this.handleChange.bind(this)}></textarea>
-                <input type="submit" value="Send"></input>
+            <form onSubmit={this.handleSubmit.bind(this)} className="send-box-container">
+                <textarea value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autofocus></textarea>
+                <input type="submit" value="Send" className="send-button"></input>
             </form>
         );
     }
