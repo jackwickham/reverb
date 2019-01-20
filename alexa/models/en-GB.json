@@ -57,6 +57,16 @@
             "set my name to {username}",
             "set my username to {username}"
           ]
+        },
+        {
+          "name": "GetHistoryIntent",
+          "samples": [
+            "get new messages",
+            "what have I missed",
+            "read my messages",
+            "what are my new messages",
+            "what messages have been sent"
+          ]
         }
       ],
       "types": []
