@@ -77,12 +77,19 @@ class Title extends React.Component {
 
 class MessagesContainer extends React.Component {
     render() {
-        let messages = this.props.messages.map(message => <li key={message.id}><Message msg={message} userId={this.props.userId}/></li>);
+        let messages = this.props.messages.map(message =>
+            <li key={message.id}>
+                <Message msg={message} userId={this.props.userId}/>
+            </li>
+        );
 
         return (
-            <ul className="messages-container">
-                {messages}
-            </ul>
+            <div className="messages-container" id="messages-container">
+                <ul className="messages-container-inner">
+                    {messages}
+                </ul>
+                <div id="messages-bottom"></div>
+            </div>
         )
     }
 }
@@ -116,29 +123,41 @@ class SendBox extends React.Component {
         }
     }
 
+    onEnterPress = (e) => {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+            this.handleSubmit(e);
+        }
+    }
+
     render() {
         return (
             <form onSubmit={this.handleSubmit.bind(this)} className="send-box-container">
-                <input value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autoFocus></input>
+                <textarea value={this.state.value} onChange={this.handleChange.bind(this)} className="send-box" autoFocus onKeyDown={this.onEnterPress.bind(this)}></textarea>
                 <input type="submit" value="Send" className="send-button"></input>
             </form>
         );
     }
 
     handleSubmit(event) {
-        if (this.state.value) {
+        if (this.state.value.trim()) {
             this.props.send(this.state.value);
-            this.setState({
-                value: ""
-            });
         }
+        this.setState({
+            value: ""
+        });
         event.preventDefault();
     }
 
     handleChange(event) {
         this.setState({value: event.target.value});
     }
-}
+    
+    componentDidUpdate() {
+        document.getElementById('messages-bottom').scrollIntoView();
+    }
+
+ }
 
 const domContainer = document.getElementById('root');
 ReactDOM.render(<App/>, domContainer);

@@ -15,7 +15,7 @@ body, #root {
     margin: auto;
     padding: 10px;
     text-align: center;
-    width: 70%; /* TODO: Make this work for small screens. */
+    width: 70%;
     height: 100%;
     border-width: 0px 1px 0px 1px;
     border-style: solid;
@@ -31,7 +31,6 @@ body, #root {
     display: inline-block;
     flex-grow: 1;
     width: 100%;
-    list-style: none;
     margin: 10px 0px 10px 0px;
     padding: 0px 0px 10px 0px;
     border-width: 1px 0px 1px 0px;
@@ -41,11 +40,15 @@ body, #root {
     overflow: auto;
 }
 
+.messages-container-inner {
+    list-style: none;
+}
+
 .send-box-container {
     display: flex;
     flex-direction: row;
     vertical-align: bottom;
-    height: 50px;
+    min-height: 50px;
 }
 
 .send-box {
