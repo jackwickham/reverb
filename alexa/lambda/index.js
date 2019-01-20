@@ -1,5 +1,5 @@
 const Alexa = require('ask-sdk-core');
-const { PersistenceAdapter: DynamoPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
+const { DynamoPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter');
 const Request = require('request-promise-native');
 
 const FALLBACK_MESSAGE = 'Sorry, but I can\'t understand your request.';
@@ -42,12 +42,13 @@ function getRequest(handlerInput) {
     return handlerInput.requestEnvelope.request;
 }
 
-function getAttr(handlerInput) {
-    return handlerInput.attributesManager.getPersistentAttributes();
+async function getAttr(handlerInput) {
+    return await handlerInput.attributesManager.getPersistentAttributes();
 }
 
 function setAttr(handlerInput, attr) {
-    return handlerInput.attributesManager.setPersistentAttributes(attr);
+    handlerInput.attributesManager.setPersistentAttributes(attr);
+    handlerInput.attributesManager.savePersistentAttributes();
 }
 
 function setName(handlerInput, name) {
