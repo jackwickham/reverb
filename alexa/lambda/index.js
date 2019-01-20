@@ -8,7 +8,7 @@ const GOODBYE = 'Goodbye.';
 const SENT = 'Sent.';
 const USERNAME_SET = 'Your username has been changed.'
 
-const API_ENDPOINT = 'http://www.xn--p18h.tk:8080/api/newMessage';
+const API_ENDPOINT = 'https://www.xn--p18h.tk/api/newMessage';
 
 const ADJECTIVES = [
     'fun', 'sad', 'happy', 'basic', 'large', 'important', 'different',
