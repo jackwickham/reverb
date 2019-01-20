@@ -16,6 +16,7 @@ type PushRegistration struct {
 
 type MessageLoadRequest struct {
 	LastSeenId uint64
+	User uint64
 }
 
 type Message struct {
@@ -23,6 +24,11 @@ type Message struct {
 	Id uint64 `json:"id"`
 	SenderName string `json:"senderName"`
 	Body string `json:"body"`
+}
+
+type MessageChannel struct{
+	Channel chan Message
+	User uint64
 }
 
 type PushMessage struct {
